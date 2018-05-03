@@ -169,6 +169,41 @@ def opt():#optimization
                 optIMG = newDrawRec(i*xssp2,j*yssp2,xssp2,yssp2,optIMG,bestPH)
                 slm.updateArray(bestIMG)
 
+#%% Gradient method
+                
+def grad_step_init():
+    global curX
+    global newX
+    global deltaX
+    global xlog
+    global ylog
+    
+    for j in range(ysp2):
+        for i in range(xsp2):
+            if inradius(i*xssp2+xssp2/2,j*yssp2+yssp2/2,active_radius):
+    
+    
+    newX = np.uint8(newX + .5)
+    for i in range(dimensie-1):
+        y0[i] = Y[curX[i]]
+    np.append(xlog, newX)
+    np.append(ylog, Y[newX])
+    for i in range(dimensie-1):
+        y1[i] = Y[np.uint8(newX[i])]
+        deltaX[i]= learningRate*(y1[i] + y0[i])*np.sign(deltaX[i])
+    newX = curX + deltaX
+    #curX = np.uint8(newX + .5)
+    xlog = np.append(xlog, curX)
+    ylog = np.append(ylog, Y[curX])
+    
+def grad_opt():
+    global testIMG
+    global bestIMG
+    global optIMG
+    global intensitiesSP
+   
+#%% options (pre)opt with(out) output
+                
 def pre_opt_with_output():
     intensitybefore = av_intensity(20) # Measure initial intensity
     before = time.time()
@@ -182,14 +217,14 @@ def pre_opt_with_output():
     print('Ratio between intensity before and intensity after is %f \n') %ratio
     print('delta T is %f minutes\n')%(deltaT/60.)
 
-def opt_with_output():
+def opt_with_output(soortopt = opt()):
     global colorlist
     print 'Starting optimization'
     
     intensitybefore = av_intensity(20) 
     before = time.time()
     colorlist = [0,51,102,153,204,255]#,102,153,204,255]
-    opt()
+    soortopt
     slm.updateArray(optIMG)
     
     time.sleep(sleep_time)
