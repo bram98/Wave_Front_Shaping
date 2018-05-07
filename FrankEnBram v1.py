@@ -78,6 +78,7 @@ colorlist = [0,100,200]
 testIMG = np.zeros((resX,resY),dtype=np.uint8) # SLM test pattern
 bestIMG = np.zeros((resX,resY),dtype=np.uint8) # SLM pattern after pre-opt
 optIMG = np.zeros((resX,resY),dtype=np.uint8) # SLM pattern after optimization
+curIMG = np.zeros((resX,resY),dtype=np.uint8) # current SLM pattern in GD-method
 
 #save intensity for each SuperPixel to plot them
 intensitiesSP = np.zeros((xsp,ysp,len(colorlist)),dtype='float64')#array of xsp x ysp x 9 (number of colours now)
@@ -170,38 +171,69 @@ def opt():#optimization
                 slm.updateArray(bestIMG)
 
 #%% Gradient method
-                
-def grad_step_init():
+def grad_step_init():#optimization    
+    global testIMG
+    global bestIMG
+    global optIMG
+    global curIMG
     global curX
     global newX
     global deltaX
-    global xlog
-    global ylog
+    for j in range(ysp2):
+        for i in range(xsp2):
+            if inradius(i*xssp2+xssp2/2,j*yssp2+yssp2/2,active_radius):
+                    testIMG = newDrawRec(i*xssp2,j*yssp2,xssp2,yssp2,bestIMG,curX[i,j])
+                    slm.updateArray(testIMG)
+                    time.sleep(sleep_time) #sleep 
+                    y0[i,j] = av_intensity()
+                # Now we update our high resolution optimization pattern:
+    curIMG = write_array(curIMG,curX)
+    slm.updateArray(curIMG)
+    
+    newX = np.uint8(curX + deltaX + .5)
+    curX = newX
     
     for j in range(ysp2):
         for i in range(xsp2):
             if inradius(i*xssp2+xssp2/2,j*yssp2+yssp2/2,active_radius):
+                    testIMG = newDrawRec(i*xssp2,j*yssp2,xssp2,yssp2,curIMG,np.uint8(newX[i,j] + 0.5))
+                    slm.updateArray(testIMG)
+                    time.sleep(sleep_time) #sleep 
+                    y1[i,j] = av_intensity()
+                    deltaX[i,j] = learningRate*(y1[i,j] + y0[i,j])*np.sign(deltaX[i,j])
+                # Now we update our high resolution optimization pattern:
+    curIMG = write_array(curIMG,curX)
+    slm.updateArray(curIMG)
     
-    
-    newX = np.uint8(newX + .5)
-    for i in range(dimensie-1):
-        y0[i] = Y[curX[i]]
-    np.append(xlog, newX)
-    np.append(ylog, Y[newX])
-    for i in range(dimensie-1):
-        y1[i] = Y[np.uint8(newX[i])]
-        deltaX[i]= learningRate*(y1[i] + y0[i])*np.sign(deltaX[i])
-    newX = curX + deltaX
-    #curX = np.uint8(newX + .5)
-    xlog = np.append(xlog, curX)
-    ylog = np.append(ylog, Y[curX])
+    newX = np.uint8(curX + deltaX + .5)
+    curX = newX
+    y0 = y1
     
 def grad_opt():
     global testIMG
     global bestIMG
     global optIMG
-    global intensitiesSP
+    global curIMG
+    global curX
+    global newX
+    global deltaX
    
+    for j in range(ysp2):
+        for i in range(xsp2):
+            if inradius(i*xssp2+xssp2/2,j*yssp2+yssp2/2,active_radius):
+                    testIMG = newDrawRec(i*xssp2,j*yssp2,xssp2,yssp2,curIMG,np.uint8(newX[i,j] + 0.5))
+                    slm.updateArray(testIMG)
+                    time.sleep(sleep_time) #sleep 
+                    y1[i,j] = av_intensity()
+                    deltaX[i,j] = learningRate*(y1[i,j] + y0[i,j])*np.sign(deltaX[i,j]) + alpha*deltaX
+                # Now we update our high resolution optimization pattern:
+    curIMG = write_array(curIMG,curX)
+    slm.updateArray(curIMG)
+
+    newX = np.uint8(curX + deltaX + .5)
+    y0 = y1
+        
+
 #%% options (pre)opt with(out) output
                 
 def pre_opt_with_output():
