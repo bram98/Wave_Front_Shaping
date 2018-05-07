@@ -1,0 +1,15 @@
+Memo 7-5-2018
+
+Beste Marijn,
+
+Wij hebben direct de eerste dag contact opgenomen met Allard Mosk en met hem afspraken gemaakt over het verdere verloop van dit onderzoek.
+Wij werken nu aan de demo-opstelling wavefront-shaping.
+Ons onderzoek is hoe goed de methode van gradiënt descent (ascent) met impuls voor het vinden van een maximum aan intensiteit werkt bij verschillende stapgroottes.
+Een probleem die we nu zien aankomen is dat er veel verschillende parameters aan deze methode verbonden zijn.
+Wij zijn nu de code aan het schrijven voor een optimalisatie met gradiënt descent methode.
+Ons plan is bij verschillende stapgroottes de enhancementfactor te meten en hier plots van te maken.
+
+Als u verder nog vragen heeft, horen wij die graag.
+
+Met vriendelijke groet,
+Bram Verreussel en Frank Corporaal
