@@ -200,7 +200,7 @@ def grad_step_init():#optimization
                     slm.updateArray(testIMG)
                     time.sleep(sleep_time) #sleep 
                     y1[i,j] = av_intensity()
-                    deltaX[i,j] = learningRate*(y1[i,j] + y0[i,j])*np.sign(deltaX[i,j])
+                    deltaX[i,j] = learningRate*(y1[i,j] - y0[i,j])*np.sign(deltaX[i,j])
                 # Now we update our high resolution optimization pattern:
     curIMG = write_array(curIMG,curX)
     slm.updateArray(curIMG)
@@ -225,7 +225,7 @@ def grad_opt():
                     slm.updateArray(testIMG)
                     time.sleep(sleep_time) #sleep 
                     y1[i,j] = av_intensity()
-                    deltaX[i,j] = learningRate*(y1[i,j] + y0[i,j])*np.sign(deltaX[i,j]) + alpha*deltaX
+                    deltaX[i,j] = learningRate*(y1[i,j] - y0[i,j])*np.sign(deltaX[i,j]) + alpha*deltaX
                 # Now we update our high resolution optimization pattern:
     curIMG = write_array(curIMG,curX)
     slm.updateArray(curIMG)
